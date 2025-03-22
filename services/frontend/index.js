@@ -35,6 +35,29 @@ function newBook(book) {
     return div;
 }
 
+
+function searchBookById(id) {
+    const books = document.querySelector('.books');
+    console.log('http://localhost:3000/product/' + id);
+
+    fetch('http://localhost:3000/product/' + id)
+        .then((data) => {
+            if (data.ok) {
+                return data.json();
+            }
+            throw data.statusText;
+        })
+        .then((data) => {
+            books.textContent = '';
+            books.appendChild(newBook(data));
+        })
+        .catch((err) => {
+            books.textContent = 'Nenhum produto encontrado';
+            swal('Erro', 'Erro ao buscar produto', 'error');
+            console.error(err);
+        });
+};
+
 function calculateShipping(id, cep) {
     fetch('http://localhost:3000/shipping/' + cep)
         .then((data) => {
@@ -52,8 +75,11 @@ function calculateShipping(id, cep) {
         });
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+function listProducts() {
+
     const books = document.querySelector('.books');
+
+    books.textContent = '';
 
     fetch('http://localhost:3000/products')
         .then((data) => {
@@ -87,4 +113,17 @@ document.addEventListener('DOMContentLoaded', function () {
             swal('Erro', 'Erro ao listar os produtos', 'error');
             console.error(err);
         });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelector('.search').addEventListener('click', (e) => {
+        const id = document.getElementById("site-search").value;
+        searchBookById(id);
+    });
+    document.querySelector('.list-all').addEventListener('click', (e) => {
+        listProducts();
+    });
+
+    listProducts();
+
 });
